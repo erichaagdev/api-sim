@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.gzip
+package com.gorlah.apisim.base64
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -9,28 +9,28 @@ import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
 @RestController
-class GzipController(
-    private val gzipCompressor: GzipCompressor,
-    private val gzipDecompressor: GzipDecompressor,
+class Base64Controller(
+    private val base64Decoder: Base64Decoder,
+    private val base64Encoder: Base64Encoder,
     private val objectMapper: ObjectMapper,
 ) {
 
     @PostMapping(
-        path = ["/gzipCompress"],
+        path = ["/base64encode"],
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.TEXT_PLAIN_VALUE],
     )
     fun base64Encode(@RequestBody request: JsonNode): Mono<String> =
         Mono.just(request)
             .map { objectMapper.writeValueAsString(it) }
-            .map { gzipCompressor.compress(it) }
+            .map { base64Encoder.encode(it) }
 
     @PostMapping(
-        path = ["/gzipDecompress"],
+        path = ["/base64decode"],
         consumes = [MediaType.TEXT_PLAIN_VALUE],
         produces = [MediaType.TEXT_PLAIN_VALUE],
     )
     fun base64Decode(@RequestBody request: String): Mono<String> =
         Mono.just(request)
-            .map { gzipDecompressor.decompress(it) }
+            .map { base64Decoder.decode(it) }
 }

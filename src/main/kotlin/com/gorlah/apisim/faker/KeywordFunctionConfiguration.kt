@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.faker
+package com.gorlah.apisim.faker
 
 import com.github.javafaker.Faker
 import org.springframework.context.annotation.Bean

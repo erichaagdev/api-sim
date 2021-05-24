@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.faker
+package com.gorlah.apisim.faker
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper

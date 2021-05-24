@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.faker
+package com.gorlah.apisim.faker
 
 data class PropertyDefinition(
     val count: Int? = null,

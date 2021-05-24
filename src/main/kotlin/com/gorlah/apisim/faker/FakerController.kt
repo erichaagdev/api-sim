@@ -1,10 +1,10 @@
-package com.gorlah.apifaker.faker
+package com.gorlah.apisim.faker
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.gorlah.apifaker.base64.Base64Decoder
-import com.gorlah.apifaker.gzip.GzipDecompressor
+import com.gorlah.apisim.base64.Base64Decoder
+import com.gorlah.apisim.gzip.GzipDecompressor
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam

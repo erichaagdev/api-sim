@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.gzip
+package com.gorlah.apisim.gzip
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

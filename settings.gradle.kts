@@ -1,1 +1,1 @@
-rootProject.name = "api-faker"
+rootProject.name = "api-sim"

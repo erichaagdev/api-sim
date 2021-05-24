@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.gzip
+package com.gorlah.apisim.gzip
 
 fun interface GzipDecompressor {
 

@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.base64
+package com.gorlah.apisim.base64
 
 fun interface Base64Decoder {
 

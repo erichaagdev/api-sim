@@ -1,11 +1,11 @@
-package com.gorlah.apifaker
+package com.gorlah.apisim
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ApiFakerApplication
+class ApiSimApplication
 
 fun main(args: Array<String>) {
-    runApplication<ApiFakerApplication>(*args)
+    runApplication<ApiSimApplication>(*args)
 }

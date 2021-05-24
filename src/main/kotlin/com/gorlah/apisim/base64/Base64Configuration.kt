@@ -1,4 +1,4 @@
-package com.gorlah.apifaker.base64
+package com.gorlah.apisim.base64
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
