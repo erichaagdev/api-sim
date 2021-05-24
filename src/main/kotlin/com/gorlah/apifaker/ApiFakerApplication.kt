@@ -1,11 +1,11 @@
-package com.gorlah.restfaker
+package com.gorlah.apifaker
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class RestFakerApplication
+class ApiFakerApplication
 
 fun main(args: Array<String>) {
-    runApplication<RestFakerApplication>(*args)
+    runApplication<ApiFakerApplication>(*args)
 }

@@ -1,10 +1,10 @@
-package com.gorlah.restfaker
+package com.gorlah.apifaker
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class RestFakerApplicationTests {
+class ApiFakerApplicationTests {
 
     @Test
     fun contextLoads() { }

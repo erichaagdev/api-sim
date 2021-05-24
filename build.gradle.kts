@@ -16,7 +16,10 @@ repositories {
 
 dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.github.javafaker:javafaker:1.0.2")
+    implementation("com.google.guava:guava:30.1.1-jre")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("org.apache.commons:commons-text:1.9")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
