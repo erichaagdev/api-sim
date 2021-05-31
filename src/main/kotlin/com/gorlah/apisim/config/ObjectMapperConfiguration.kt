@@ -1,6 +1,6 @@
 package com.gorlah.apisim.config
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Configuration
 class ObjectMapperConfiguration {
 
     @Bean
-    fun objectMapper() = jacksonObjectMapper().findAndRegisterModules()!!
+    fun objectMapper() = ObjectMapper().findAndRegisterModules()!!
 }

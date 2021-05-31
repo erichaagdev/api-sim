@@ -1,15 +1,19 @@
-package com.gorlah.apisim.faker
+package com.gorlah.apisim.simulation
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.google.common.base.Splitter
+import com.gorlah.apisim.simulation.PropertyType.AUTO
+import com.gorlah.apisim.simulation.PropertyType.BOOLEAN
+import com.gorlah.apisim.simulation.PropertyType.NULL
+import com.gorlah.apisim.simulation.PropertyType.NUMBER
+import com.gorlah.apisim.simulation.PropertyType.STRING
 import org.apache.commons.text.StringSubstitutor
 import org.springframework.core.convert.ConversionException
 import org.springframework.core.convert.ConversionService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toMono
 import java.util.Random
 import java.util.stream.IntStream
 import kotlin.math.roundToInt
@@ -17,19 +21,22 @@ import kotlin.streams.asSequence
 
 @Service
 @Suppress("UnstableApiUsage")
-class FakerService(
-    keywordFunctions: List<KeywordFunction>,
+class SimulationService(
+    dataFunctions: List<DataFunction>,
     private val conversionService: ConversionService,
+    private val simulationDelayService: SimulationDelayService,
     private val objectMapper: ObjectMapper,
 ) {
 
-    private val keywordFunctions = keywordFunctions.associateBy { it.keyword.lowercase() }
+    private val keywordFunctions = dataFunctions.associateBy { it.type.lowercase() }
     private val propertySplitter = Splitter.on(',').omitEmptyStrings().trimResults().withKeyValueSeparator('=')!!
     private val random = Random()
     private val stringSubstitutor = StringSubstitutor({ handleKeyword(it) }, "#{", "}", '#')
 
-    fun generateFakeData(fakerDefinition: FakerDefinition): Mono<JsonNode> =
-        parseProperties(fakerDefinition.properties).toMono()
+    fun generateSimulatedData(simulationDefinition: SimulationDefinition): Mono<JsonNode> =
+        Mono.just(simulationDefinition)
+            .flatMap { simulationDelayService.delayIfNecessary(it.delay).thenReturn(it) }
+            .map { parseProperties(simulationDefinition.properties) }
 
     private fun parseProperties(properties: Map<String, PropertyDefinition>): JsonNode =
         properties.entries.fold(objectMapper.createObjectNode()) { response, (name, definition) ->
@@ -38,12 +45,12 @@ class FakerService(
 
     private fun handleProperty(response: ObjectNode, name: String, definition: PropertyDefinition): ObjectNode {
         if (definition.properties != null) {
-            if (definition.type != null && definition.type == PropertyType.ARRAY) {
+            if (definition.type == PropertyType.ARRAY) {
                 handleArray(
                     response = response,
                     name = name,
-                    count = definition.count ?: 1,
-                    countVariance = definition.countVariance ?: 0,
+                    countAverage = definition.count?.average ?: 1,
+                    countVariance = definition.count?.variance ?: 0,
                     properties = definition.properties
                 )
             } else {
@@ -68,11 +75,11 @@ class FakerService(
     private fun handleArray(
         response: ObjectNode,
         name: String,
-        count: Int,
+        countAverage: Int,
         countVariance: Int,
         properties: Map<String, PropertyDefinition>
     ): JsonNode =
-        IntStream.range(0, maxOf((count + (random.nextGaussian() * countVariance)).roundToInt(), 0))
+        IntStream.range(0, maxOf((countAverage + (random.nextGaussian() * countVariance)).roundToInt(), 0))
             .asSequence()
             .fold(response.withArray(name)) { array, _ ->
                 array.add(parseProperties(properties))
@@ -93,17 +100,17 @@ class FakerService(
     ): JsonNode {
         val value = stringSubstitutor.replace(expression)
         when (type) {
-            PropertyType.BOOLEAN -> convertBoolean(response, name, value)
-            PropertyType.NULL -> response.putNull(name)
-            PropertyType.NUMBER -> convertInt(response, name, value)
-            PropertyType.STRING -> response.put(name, value)
-            null -> convertValue(response, name, value)
+            AUTO -> convertAuto(response, name, value)
+            BOOLEAN -> convertBoolean(response, name, value)
+            NULL -> response.putNull(name)
+            NUMBER -> convertInt(response, name, value)
+            STRING -> response.put(name, value)
             else -> response.put(name, value)
         }
         return response
     }
 
-    private fun convertValue(response: ObjectNode, name: String, value: String): JsonNode =
+    private fun convertAuto(response: ObjectNode, name: String, value: String): JsonNode =
         when (value) {
             "true" -> response.put(name, true)
             "false" -> response.put(name, false)
@@ -122,7 +129,7 @@ class FakerService(
         when (value) {
             "true" -> response.put(name, true)
             "false" -> response.put(name, false)
-            else -> convertValue(response, name, value)
+            else -> convertAuto(response, name, value)
         }
 
     private fun handleKeyword(expression: String): String {

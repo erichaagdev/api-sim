@@ -3,8 +3,8 @@ Content-Type: application/json
 Accept: text/plain
 
 {
-  "delay": 50,
-  "delayVariance": 250,
+  "delay": "250ms",
+  "delayVariance": "50ms",
   "properties": {
     "id": {
       "value": "#{uuid}"
@@ -37,7 +37,7 @@ Accept: text/plain
 
 ###
 
-GET http://localhost:8080/?g=H4sIAAAAAAAAAF2PPQuDMBCG_8t1zaBCl4CDU-nSwUqh41XTcpAPiYlUxP9eE4WqGcLxPk8udyM0QuIA_JywpXygJdS1AJ6FrLWmFdaR6ICPQE24e5R-5nAavadmgomBUEhyz2IUIX7EHpF2XJHOM6bwm6fJYtWO-ii6oQ3evSqvtwuwzcOXMVKgjr5GtbWLsiyes1wbr908_Fr910mPy7zJdm4_WIxC4_iDxCMPyYrD-QE-R4kNPgEAAA==
+GET http://localhost:8080/?g=H4sIAAAAAAAAAF2PPQuDMBCG_8t1dVChS8DBqXTpYEuh41Wv5SAfEhOpiP-9JgrWZgjJ-zyX3I3QkMQBBOTHVHWQLPc7WkZd05yvcWtNS9YxdSBG4CbsPUoflMPoPTcTTAmQQpZ7FqMI8U17xNoJxbrIE4WfIksXq3bcR9ENbfCut-p8Oc09bIVPYyShjr5G9WuXVVU-Zrk2XjsQ-XraJsr-h3mx7dy-sRiFh-MPEv95SFYc1hd91dskRgEAAA==
 Accept: application/json
 
 ###

@@ -2,7 +2,8 @@ package com.gorlah.apisim.gzip
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.http.MediaType
+import com.gorlah.apisim.util.APPLICATION_JSON
+import com.gorlah.apisim.util.TEXT_PLAIN
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -17,8 +18,8 @@ class GzipController(
 
     @PostMapping(
         path = ["/gzipCompress"],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
-        produces = [MediaType.TEXT_PLAIN_VALUE],
+        consumes = [APPLICATION_JSON],
+        produces = [TEXT_PLAIN],
     )
     fun base64Encode(@RequestBody request: JsonNode): Mono<String> =
         Mono.just(request)
@@ -27,8 +28,8 @@ class GzipController(
 
     @PostMapping(
         path = ["/gzipDecompress"],
-        consumes = [MediaType.TEXT_PLAIN_VALUE],
-        produces = [MediaType.TEXT_PLAIN_VALUE],
+        consumes = [TEXT_PLAIN],
+        produces = [TEXT_PLAIN],
     )
     fun base64Decode(@RequestBody request: String): Mono<String> =
         Mono.just(request)

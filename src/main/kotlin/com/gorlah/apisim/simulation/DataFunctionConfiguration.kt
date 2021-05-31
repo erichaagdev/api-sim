@@ -1,4 +1,4 @@
-package com.gorlah.apisim.faker
+package com.gorlah.apisim.simulation
 
 import com.github.javafaker.Faker
 import org.springframework.context.annotation.Bean
@@ -7,23 +7,23 @@ import java.util.UUID
 import kotlin.random.Random
 
 @Configuration
-class KeywordFunctionConfiguration {
+class DataFunctionConfiguration {
 
     @Bean
-    fun uuidKeywordFunction() = object : KeywordFunction {
-        override val keyword = "uuid"
+    fun uuidDataFunction() = object : DataFunction {
+        override val type = "uuid"
         override fun apply(properties: Map<String, String>) = UUID.randomUUID().toString()
     }
 
     @Bean
-    fun emailKeywordFunction(faker: Faker) = object : KeywordFunction {
-        override val keyword = "email"
+    fun emailDataFunction(faker: Faker) = object : DataFunction {
+        override val type = "email"
         override fun apply(properties: Map<String, String>) = faker.internet().emailAddress()
     }
 
     @Bean
-    fun intKeywordFunction() = object : KeywordFunction {
-        override val keyword = "int"
+    fun intDataFunction() = object : DataFunction {
+        override val type = "int"
         override fun apply(properties: Map<String, String>): String {
             val min = properties["min"]?.toInt() ?: 0
             val max = properties["max"]?.toInt() ?: Int.MAX_VALUE
@@ -32,24 +32,24 @@ class KeywordFunctionConfiguration {
     }
 
     @Bean
-    fun booleanKeywordFunction() = object : KeywordFunction {
-        override val keyword = "boolean"
+    fun booleanDataFunction() = object : DataFunction {
+        override val type = "boolean"
         override fun apply(properties: Map<String, String>): String {
             return Random.nextBoolean().toString()
         }
     }
 
     @Bean
-    fun firstnameKeywordFunction(faker: Faker) = object : KeywordFunction {
-        override val keyword = "firstname"
+    fun firstnameDataFunction(faker: Faker) = object : DataFunction {
+        override val type = "firstname"
         override fun apply(properties: Map<String, String>): String {
             return faker.name().firstName()
         }
     }
 
     @Bean
-    fun lastnameKeywordFunction(faker: Faker) = object : KeywordFunction {
-        override val keyword = "lastname"
+    fun lastnameDataFunction(faker: Faker) = object : DataFunction {
+        override val type = "lastname"
         override fun apply(properties: Map<String, String>): String {
             return faker.name().lastName()
         }
