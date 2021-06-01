@@ -3,11 +3,23 @@ Content-Type: application/json
 Accept: text/plain
 
 {
-  "delay": "250ms",
-  "delayVariance": "50ms",
+  "delay": {
+    "average": 250,
+    "variance": 50
+  },
   "properties": {
     "id": {
       "value": "#{uuid}"
+    },
+    "name": {
+      "properties": {
+        "first": {
+          "value": "#{firstname}"
+        },
+        "last": {
+          "value": "#{lastname}"
+        }
+      }
     },
     "email": {
       "value": "#{email}"
@@ -15,14 +27,23 @@ Accept: text/plain
     "age": {
       "value": "#{int:min=2,max=10}"
     },
+    "balance": {
+      "value": "#{decimal:min=70.9,max=120.33}"
+    },
+    "birthday": {
+      "value": "#{date-future:max=365,unit=DAYS,format=MM-dd}"
+    },
+    "createdOn": {
+      "value": "#{epoch-millis}"
+    },
     "active": {
-      "type": "STRING",
       "value": "#{boolean}"
     },
-    "name": {
-      "type": "ARRAY",
-      "count": 2,
-      "countVariance": 1,
+    "friends": {
+      "count": {
+        "average": 2,
+        "variance": 1
+      },
       "properties": {
         "first": {
           "value": "#{firstname}"
@@ -37,7 +58,7 @@ Accept: text/plain
 
 ###
 
-GET http://localhost:8080/?g=H4sIAAAAAAAAAF2PPQuDMBCG_8t1dVChS8DBqXTpYEuh41Wv5SAfEhOpiP-9JgrWZgjJ-zyX3I3QkMQBBOTHVHWQLPc7WkZd05yvcWtNS9YxdSBG4CbsPUoflMPoPTcTTAmQQpZ7FqMI8U17xNoJxbrIE4WfIksXq3bcR9ENbfCut-p8Oc09bIVPYyShjr5G9WuXVVU-Zrk2XjsQ-XraJsr-h3mx7dy-sRiFh-MPEv95SFYc1hd91dskRgEAAA==
+GET http://localhost:8080/?g=H4sIAAAAAAAAAKWRTWuEMBCG_0t61cVVbKngodDr0sOeepxNxu5APiQm0kXy32uSHtQeewlk3ueB-ViYQAkP1i0MZrTwhayr26pgM1gCzddvW4WCjdaMaB3hFFES8Z1B-jVnT4v3JAJbMQ0KY7THB7KT2xupFOmkSTjmsfIbhxVABST3RColOzW9jUi7TpHu60LBd3-uEnUDmefZkgI5KZCJfqlOr1moq1PTZImsu4u8n40FDsvBO2-xi0Lz3BZek-vf3z6vxWCsAtdfLqXIS-EWV0F86MMAo-H3UpGUNOU5uKP50ODNGImgUz5YQi3SRrnx2u2Ptj3Z-c_F_nuCEH4AArhiBCoCAAA=
 Accept: application/json
 
 ###

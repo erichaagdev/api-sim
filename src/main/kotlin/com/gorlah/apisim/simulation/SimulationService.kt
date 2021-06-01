@@ -10,8 +10,6 @@ import com.gorlah.apisim.simulation.PropertyType.NULL
 import com.gorlah.apisim.simulation.PropertyType.NUMBER
 import com.gorlah.apisim.simulation.PropertyType.STRING
 import org.apache.commons.text.StringSubstitutor
-import org.springframework.core.convert.ConversionException
-import org.springframework.core.convert.ConversionService
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.Random
@@ -23,15 +21,14 @@ import kotlin.streams.asSequence
 @Suppress("UnstableApiUsage")
 class SimulationService(
     dataFunctions: List<DataFunction>,
-    private val conversionService: ConversionService,
     private val simulationDelayService: SimulationDelayService,
     private val objectMapper: ObjectMapper,
 ) {
 
-    private val keywordFunctions = dataFunctions.associateBy { it.type.lowercase() }
+    private val keywordFunctions = dataFunctions.associateBy { it.type.trim().lowercase().replace("-", "") }
     private val propertySplitter = Splitter.on(',').omitEmptyStrings().trimResults().withKeyValueSeparator('=')!!
     private val random = Random()
-    private val stringSubstitutor = StringSubstitutor({ handleKeyword(it) }, "#{", "}", '#')
+    private val stringSubstitutor = StringSubstitutor({ handleDataFunction(it) }, "#{", "}", '#')
 
     fun generateSimulatedData(simulationDefinition: SimulationDefinition): Mono<JsonNode> =
         Mono.just(simulationDefinition)
@@ -40,13 +37,13 @@ class SimulationService(
 
     private fun parseProperties(properties: Map<String, PropertyDefinition>): JsonNode =
         properties.entries.fold(objectMapper.createObjectNode()) { response, (name, definition) ->
-            handleProperty(response, name, definition)
+            generateProperty(response, name, definition)
         }
 
-    private fun handleProperty(response: ObjectNode, name: String, definition: PropertyDefinition): ObjectNode {
+    private fun generateProperty(response: ObjectNode, name: String, definition: PropertyDefinition): ObjectNode {
         if (definition.properties != null) {
-            if (definition.type == PropertyType.ARRAY) {
-                handleArray(
+            if (definition.type == PropertyType.ARRAY || definition.count != null) {
+                generateArray(
                     response = response,
                     name = name,
                     countAverage = definition.count?.average ?: 1,
@@ -54,14 +51,14 @@ class SimulationService(
                     properties = definition.properties
                 )
             } else {
-                handleObject(
+                generateObject(
                     response = response,
                     name = name,
                     properties = definition.properties
                 )
             }
         } else if (definition.value != null) {
-            handleValue(
+            generateValue(
                 response = response,
                 name = name,
                 expression = definition.value,
@@ -72,7 +69,7 @@ class SimulationService(
         return response
     }
 
-    private fun handleArray(
+    private fun generateArray(
         response: ObjectNode,
         name: String,
         countAverage: Int,
@@ -85,14 +82,14 @@ class SimulationService(
                 array.add(parseProperties(properties))
             }
 
-    private fun handleObject(
+    private fun generateObject(
         response: ObjectNode,
         name: String,
         properties: Map<String, PropertyDefinition>
     ): JsonNode =
         response.set(name, parseProperties(properties))
 
-    private fun handleValue(
+    private fun generateValue(
         response: ObjectNode,
         name: String,
         expression: String,
@@ -103,7 +100,7 @@ class SimulationService(
             AUTO -> convertAuto(response, name, value)
             BOOLEAN -> convertBoolean(response, name, value)
             NULL -> response.putNull(name)
-            NUMBER -> convertInt(response, name, value)
+            NUMBER -> convertNumber(response, name, value)
             STRING -> response.put(name, value)
             else -> response.put(name, value)
         }
@@ -115,15 +112,14 @@ class SimulationService(
             "true" -> response.put(name, true)
             "false" -> response.put(name, false)
             "null" -> response.putNull(name)
-            else -> convertInt(response, name, value)
+            else -> convertNumber(response, name, value)
         }
 
-    private fun convertInt(response: ObjectNode, name: String, value: String): JsonNode =
-        try {
-            response.put(name, conversionService.convert(value, Int::class.java))
-        } catch (_: ConversionException) {
-            response.put(name, value)
-        }
+    private fun convertNumber(response: ObjectNode, name: String, value: String): JsonNode =
+        value.toBigDecimalOrNull()
+            .let {
+                if (it == null) response.put(name, value) else response.put(name, it)
+            }
 
     private fun convertBoolean(response: ObjectNode, name: String, value: String): JsonNode =
         when (value) {
@@ -132,10 +128,10 @@ class SimulationService(
             else -> convertAuto(response, name, value)
         }
 
-    private fun handleKeyword(expression: String): String {
+    private fun handleDataFunction(expression: String): String {
         val split = expression.split(":", limit = 2).toTypedArray()
-        val keyword = split[0].trim().lowercase()
+        val type = split[0].trim().lowercase().replace("-", "")
         val properties = if (split.size == 1) emptyMap() else propertySplitter.split(split[1])
-        return keywordFunctions[keyword]?.apply(properties) ?: throw UnknownKeywordException(keyword)
+        return keywordFunctions[type]?.apply(properties) ?: throw UnknownTypeException(type)
     }
 }

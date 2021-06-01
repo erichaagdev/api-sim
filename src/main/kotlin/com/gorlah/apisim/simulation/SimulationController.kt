@@ -29,7 +29,7 @@ class SimulationController(
     ): Mono<JsonNode> =
         Mono.just(parseDefinition(asBase64, asGzip))
             .flatMap { simulationService.generateSimulatedData(it) }
-            .onErrorMap(UnknownKeywordException::class) { ResponseStatusException(HttpStatus.BAD_REQUEST) }
+            .onErrorMap(UnknownTypeException::class) { ResponseStatusException(HttpStatus.BAD_REQUEST) }
             .switchIfEmpty(ResponseStatusException(HttpStatus.BAD_REQUEST).toMono())
 
     private fun parseDefinition(asBase64: String?, asGzip: String?): SimulationDefinition =
